@@ -35,3 +35,15 @@ renderer.setSize(sizes.width, sizes.height);
 
 // Rendering scene and camera
 renderer.render(scene, camera);
+
+// Function that gets called once every frame
+const tick = function () {
+    mesh.rotation.y += 0.01;
+    // This gets called in the next frame
+    window.requestAnimationFrame(tick);
+
+    // Render for changes to reflect correctly
+    renderer.render(scene, camera);
+}
+
+tick();
