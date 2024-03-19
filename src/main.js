@@ -19,7 +19,7 @@ paperTexture.colorSpace = THREE.SRGBColorSpace
 
 const geometry = new THREE.BoxGeometry(1,1,1);
 const material = new THREE.MeshBasicMaterial({
-    map: woodTexture
+    map: paperTexture
 });
 
 // Create mesh by creating object and material
@@ -51,7 +51,7 @@ renderer.render(scene, camera);
 
 // Function that gets called once every frame
 const tick = function () {
-    // mesh.rotation.y += 0.01;
+    mesh.rotation.y += 0.01;
     // This gets called in the next frame
     window.requestAnimationFrame(tick);
 
