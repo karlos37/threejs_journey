@@ -1,7 +1,9 @@
-import * as THREE from 'three'
+import * as THREE from 'three';
 import {RGBELoader} from "three/addons";
+import {GUI} from 'lil-gui';
 
 const canvas = document.querySelector('canvas.webgl');
+const gui = new GUI();
 
 // Add Scene
 const scene = new THREE.Scene();
@@ -41,6 +43,8 @@ material.map = woodTexture;
 material.roughness = 0;
 material.metalness = 1;
 material.side = THREE.DoubleSide;
+gui.add(material, 'roughness').min(0).max(1).step(0.0001);
+gui.add(material, 'metalness').min(0).max(1).step(0.0001);
 
 // Create boxMesh by creating object and material
 const boxMesh = new THREE.Mesh(boxGeometry, material);
