@@ -55,14 +55,34 @@ scene.add(planeMesh);
 scene.add(torusMesh);
 
 const sizes = {
-    width: 800,
-    height: 600
+    width: window.innerWidth,
+    height: window.innerHeight
 }
 
 const cursor = {x: 0, y: 0};
 window.addEventListener('mousemove', (event) => {
     cursor.x = event.clientX / sizes.width - 0.5;
     cursor.y = -(event.clientY / sizes.height - 0.5);
+})
+
+// Resize
+window.addEventListener('resize', () => {
+    sizes.width = window.innerWidth;
+    sizes.height = window.innerHeight;
+
+    camera.aspect = sizes.width / sizes.height;
+    camera.updateProjectionMatrix();
+
+    renderer.setSize(sizes.width, sizes.height);
+    renderer.setPixelRatio(Math.min(2, window.devicePixelRatio));
+});
+
+window.addEventListener('dblclick', () => {
+    if (document.fullscreenEnabled) {
+        document.exitFullscreen();
+    } else {
+        canvas.requestFullscreen();
+    }
 })
 
 // Add camera to scene
@@ -78,6 +98,7 @@ const renderer = new THREE.WebGLRenderer({
 
 // Setting size of renderer
 renderer.setSize(sizes.width, sizes.height);
+renderer.setPixelRatio(Math.min(2, window.devicePixelRatio));
 
 // Rendering scene and camera
 renderer.render(scene, camera);
