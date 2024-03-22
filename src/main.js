@@ -1,4 +1,5 @@
 import * as THREE from 'three'
+import {RGBELoader} from "three/addons";
 
 const canvas = document.querySelector('canvas.webgl');
 
@@ -8,26 +9,50 @@ const scene = new THREE.Scene();
 // Add Loading Manager
 const loadingManager = new THREE.LoadingManager();
 const textureLoader = new THREE.TextureLoader(loadingManager);
+const rgbeLoader = new RGBELoader();
 
-const woodTexture = textureLoader.load('wood.avif');
-const paintTexture = textureLoader.load('paints.png');
-const paperTexture = textureLoader.load('paper.jpeg');
+// Textures
+const woodTexture = textureLoader.load('./textures/wood.avif');
+const paintTexture = textureLoader.load('./textures/paints.png');
+const paperTexture = textureLoader.load('./textures/paper.jpeg');
 
 woodTexture.colorSpace = THREE.SRGBColorSpace
 paintTexture.colorSpace = THREE.SRGBColorSpace
 paperTexture.colorSpace = THREE.SRGBColorSpace
 
-const geometry = new THREE.BoxGeometry(1,1,1);
-const material = new THREE.MeshBasicMaterial({
-    map: paperTexture
-});
+// Lights
+// const color = 0xFFFFFF;
+// const intensity = 1;
+// const light = new THREE.AmbientLight(color, intensity);
+// scene.add(light);
 
-// Create mesh by creating object and material
-const mesh = new THREE.Mesh(geometry, material);
+// Environment / Lights
+rgbeLoader.load('./environment/2k.hdr', (environmentMap) => {
+    environmentMap.mapping = THREE.EquirectangularReflectionMapping;
+    scene.background = environmentMap;
+    scene.environment = environmentMap;
+})
 
 
-// Add mesh to scene
-scene.add(mesh);
+// Geometries and Materials
+const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
+const material = new THREE.MeshStandardMaterial();
+material.map = woodTexture;
+material.roughness = 0;
+material.metalness = 1;
+material.side = THREE.DoubleSide;
+
+// Create boxMesh by creating object and material
+const boxMesh = new THREE.Mesh(boxGeometry, material);
+const planeMesh = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), material);
+planeMesh.position.x -= 2;
+const torusMesh = new THREE.Mesh(new THREE.TorusGeometry(1, 0.4), material);
+torusMesh.position.x -= 5;
+
+// Add boxMesh to scene
+scene.add(boxMesh);
+scene.add(planeMesh);
+scene.add(torusMesh);
 
 const sizes = {
     width: 800,
@@ -42,7 +67,8 @@ window.addEventListener('mousemove', (event) => {
 
 // Add camera to scene
 const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height);
-camera.position.z = 3
+camera.position.z = 6
+camera.position.x -= 2
 scene.add(camera);
 
 // Create renderer and render on a canvas
@@ -58,18 +84,24 @@ renderer.render(scene, camera);
 
 // Function that gets called once every frame
 const tick = function () {
-    // mesh.rotation.x += 0.01;
+    boxMesh.rotation.x += 0.01;
+    planeMesh.rotation.x += 0.01;
+    torusMesh.rotation.x += 0.01;
+
+    boxMesh.rotation.y += 0.02;
+    planeMesh.rotation.y += 0.02;
+    torusMesh.rotation.y += 0.02;
+
     // camera.position.set(cursor.x*3, cursor.y * 3);
 
-    camera.position.x = Math.sin(Math.PI * 2 * cursor.x) * 3;
-    camera.position.z = Math.cos(Math.PI * 2 * cursor.x) * 3;
-    camera.position.y = -Math.sin(Math.PI * 2 * cursor.y) * 3;
-    camera.lookAt(mesh.position);
+    // camera.position.x = Math.sin(Math.PI * 2 * cursor.x) * 3;
+    // camera.position.z = Math.cos(Math.PI * 2 * cursor.x) * 3;
+    // camera.position.y = -Math.sin(Math.PI * 2 * cursor.y) * 3;
+    // camera.lookAt(boxMesh.position);
     // This gets called in the next frame
     window.requestAnimationFrame(tick);
 
     // Render for changes to reflect correctly
     renderer.render(scene, camera);
 }
-
 tick();
